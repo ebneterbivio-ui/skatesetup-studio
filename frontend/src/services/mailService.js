@@ -1,10 +1,7 @@
-// Wird in Abgabe 2 implementiert
-export const sendMail = async (data) => {
-  const res = await fetch('/api/mail/send', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  })
-  if (!res.ok) throw new Error('Fehler beim Mailversand')
-  return res.json()
-}
+import axios from 'axios' // HTTP-Client für API-Aufrufe
+
+const BASE = '/api/mail' // Basis-URL für den Mail-Service
+
+// Funktion, um die Mail-API aufzurufen und Daten zu senden
+export const sendMail = (data) =>
+  axios.post(`${BASE}/send`, data).then(res => res.data)
