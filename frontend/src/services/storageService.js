@@ -1,16 +1,11 @@
-// Wird in Abgabe 2 implementiert
-export const getSetups = async () => {
-  const res = await fetch('/api/storage/setups')
-  if (!res.ok) throw new Error('Fehler beim Laden')
-  return res.json()
-}
+import axios from 'axios' // HTTP-Client für API-Aufrufe
 
-export const saveSetup = async (setup) => {
-  const res = await fetch('/api/storage/setups', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(setup)
-  })
-  if (!res.ok) throw new Error('Fehler beim Speichern')
-  return res.json()
-}
+const BASE = '/api/storage' // Basis-URL für den Storage-Service
+
+// Alle gespeicherten Setups vom Backend laden
+export const getSetups = () =>
+  axios.get(`${BASE}/setups`).then(res => res.data)
+
+// Neues Setup an das Backend senden und speichern
+export const saveSetup = (setup) =>
+  axios.post(`${BASE}/setups`, setup).then(res => res.data)

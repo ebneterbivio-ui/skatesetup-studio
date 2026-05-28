@@ -1,34 +1,103 @@
+import { useState, useEffect } from 'react'
+import FormField from '../components/FormField.jsx'
+import SetupCard from '../components/SetupCard.jsx'
+import StatusMessage from '../components/StatusMessage.jsx'
+import { getSetups, saveSetup } from '../services/storageService.js'
+import { EMPTY_SETUP_FORM, PURPOSE_OPTIONS, RATING_OPTIONS } from '../utils/skateConstants.js'
 import './MySetups.css'
 
 export default function MySetups() {
+  const [setups, setSetups] = useState([]) // Liste der geladenen Setups
+  const [form, setForm] = useState(EMPTY_SETUP_FORM) // Formularzustand
+  const [status, setStatus] = useState(null) // Statusmeldung anzeigen
+  const [loading, setLoading] = useState(false) // Ladezustand für Submit-Button
+
+  useEffect(() => { loadSetups() }, []) // Beim Laden der Seite Setups abrufen
+
+  const loadSetups = async () => {
+    try {
+      const data = await getSetups() // Setups vom Backend laden
+      setSetups(data)
+    } catch {
+      setStatus({ type: 'error', text: 'Setups konnten nicht geladen werden.' })
+    }
+  }
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value }) // Formulareingabe speichern
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault() // Standardverhalten des Formulars verhindern
+    setLoading(true)
+    setStatus(null)
+    try {
+      await saveSetup(form) // Setup an das Backend senden
+      setStatus({ type: 'success', text: 'Setup erfolgreich gespeichert!' })
+      setForm(EMPTY_SETUP_FORM) // Formular zurücksetzen
+      await loadSetups() // Liste neu laden
+    } catch {
+      setStatus({ type: 'error', text: 'Fehler beim Speichern. Bitte erneut versuchen.' })
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
-    <div className="container setups-page">
-      <h2>Meine Setups</h2>
-      <p className="page-sub">
-        Hier dokumentierst du deine gefahrenen Setups mit Bewertung und Feedback.
-        <br /><span className="coming-badge">Coming soon — wird in Abgabe 2 umgesetzt</span>
+    <div className="page-container my-setups-page">
+      <h2 className="my-setups-page__title">Meine Setups</h2>
+      <p className="my-setups-page__description">
+        Dokumentiere deine gefahrenen Setups mit Bewertung und persönlichem Feedback.
       </p>
-      <div className="setups-layout">
-        <div className="preview-form setups-form">
-          <h3>Setup dokumentieren</h3>
-          {['Setup Name','Deck','Trucks','Wheels','Bewertung','Feedback'].map(label => (
-            <div key={label} className="preview-field">
-              <span>{label}</span>
-              <div className={`preview-input${label === 'Feedback' ? ' tall' : ''}`} />
-            </div>
-          ))}
-          <button className="btn btn-primary" disabled>Speichern</button>
-        </div>
-        <div className="setups-list">
-          <h3>Gespeicherte Setups</h3>
-          {[1,2,3].map(i => (
-            <div key={i} className="skeleton-card">
-              <div className="skel skel-title" />
-              <div className="skel-row"><div className="skel skel-field" /><div className="skel skel-field" /></div>
-              <div className="skel skel-feedback" />
-            </div>
-          ))}
-        </div>
+      <div className="my-setups-page__layout">
+        <section className="my-setups-page__form-section">
+          <h3 className="my-setups-page__section-title">Setup dokumentieren</h3>
+          <form onSubmit={handleSubmit}>
+            <FormField label="Setup Name">
+              <input name="setupName" required value={form.setupName} onChange={handleChange} placeholder="z.B. Street Tech 8.0" />
+            </FormField>
+            <FormField label="Deck">
+              <input name="deck" required value={form.deck} onChange={handleChange} placeholder="z.B. Chocolate 8.0" />
+            </FormField>
+            <FormField label="Achsen (Trucks)">
+              <input name="trucks" required value={form.trucks} onChange={handleChange} placeholder="z.B. Independent 139" />
+            </FormField>
+            <FormField label="Rollen (Wheels)">
+              <input name="wheels" required value={form.wheels} onChange={handleChange} placeholder="z.B. Spitfire 52mm 99A" />
+            </FormField>
+            <FormField label="Bearings">
+              <input name="bearings" required value={form.bearings} onChange={handleChange} placeholder="z.B. Bones Reds" />
+            </FormField>
+            <FormField label="Einsatzzweck">
+              <select name="purpose" value={form.purpose} onChange={handleChange}>
+                {PURPOSE_OPTIONS.map(opt => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
+              </select>
+            </FormField>
+            <FormField label="Bewertung">
+              <select name="rating" value={form.rating} onChange={handleChange}>
+                {RATING_OPTIONS.map(r => (
+                  <option key={r} value={r}>{r} / 5</option>
+                ))}
+              </select>
+            </FormField>
+            <FormField label="Feedback">
+              <textarea name="feedback" required value={form.feedback} onChange={handleChange} placeholder="Wie hat das Setup performt?" />
+            </FormField>
+            <button className="btn btn-primary" type="submit" disabled={loading}>
+              {loading ? 'Wird gespeichert…' : 'Setup speichern'}
+            </button>
+          </form>
+          <StatusMessage type={status?.type} text={status?.text} />
+        </section>
+        <section className="my-setups-page__list-section">
+          <h3 className="my-setups-page__section-title">Gespeicherte Setups ({setups.length})</h3>
+          {setups.length === 0
+            ? <p className="my-setups-page__empty">Noch keine Setups gespeichert.</p>
+            : setups.map(s => <SetupCard key={s.id} setup={s} />)
+          }
+        </section>
       </div>
     </div>
   )

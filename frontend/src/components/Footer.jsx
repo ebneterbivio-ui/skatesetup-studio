@@ -1,11 +1,12 @@
-import './Footer.css'
+import './Footer.css' // Footer-Styles importieren
 
+// Footer-Komponente zeigt Copyright-Informationen an
 function Footer() {
   return (
-    <footer className="footer">
-      <div className="container footer-inner">
-        <p className="footer-brand">SkateSetup Studio</p>
-        <p className="footer-copy">© {new Date().getFullYear()} — Dein persönliches Skate-Logbuch</p>
+    <footer className="site-footer">
+      <div className="page-container site-footer__inner">
+        <p className="site-footer__brand">SkateSetup Studio</p>
+        <p className="site-footer__copy">© {new Date().getFullYear()} — Dein persönliches Skate-Logbuch</p>
       </div>
     </footer>
   )

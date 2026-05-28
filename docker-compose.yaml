@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - '3000:3000'
+    environment:
+      - PORT=3000
+      - STORAGE_SERVICE_URL=http://storage-service:3001
+      - MAIL_SERVICE_URL=http://mail-service:3002
+    depends_on:
+      - storage-service
+      - mail-service
+
+  storage-service:
+    build: ./storage-service
+    ports:
+      - '3001:3001'
+    environment:
+      - PORT=3001
+      - DB_HOST=db-service
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=skatesetup
+      - DB_PORT=5432
+    depends_on:
+      - db-service
+
+  mail-service:
+    build: ./mail-service
+    ports:
+      - '3002:3002'
+    environment:
+      - PORT=3002
+
+  db-service:
+    image: postgres:15-alpine
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=skatesetup
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  db-admin:
+    image: adminer
+    ports:
+      - '8080:8080'
+    environment:
+      - ADMINER_DEFAULT_SERVER=db-service
+    depends_on:
+      - db-service
+
+volumes:
+  db-data:
