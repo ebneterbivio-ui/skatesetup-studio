@@ -1,7 +1,6 @@
-import axios from 'axios' // HTTP-Client für API-Aufrufe
+import axios from 'axios'
 
-const BASE = '/api/mail' // Basis-URL für den Mail-Service
+const BASE = '/api/mail'
 
-// Funktion, um die Mail-API aufzurufen und Daten zu senden
 export const sendMail = (data) =>
   axios.post(`${BASE}/send`, data).then(res => res.data)

@@ -1,7 +1,6 @@
-import { Link, useLocation } from 'react-router-dom' // Navigation und aktiven Pfad nutzen
-import './Navbar.css' // Styles für die Navigation importieren
+import { Link, useLocation } from 'react-router-dom'
+import './Navbar.css'
 
-// Navigationseinträge definieren
 const NAV_LINKS = [
   { to: '/', label: 'Home' },
   { to: '/plan', label: 'Setup planen' },
@@ -9,13 +8,12 @@ const NAV_LINKS = [
 ]
 
 function Navbar() {
-  const { pathname } = useLocation() // aktuellen Pfad ermitteln
+  const { pathname } = useLocation()
 
   return (
     <header className="nav-bar">
       <div className="page-container nav-bar__inner">
         <Link to="/" className="nav-bar__logo">
-          {/* Logo-Symbol und Markenname */}
           <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
             <rect x="2" y="10" width="24" height="8" rx="4" fill="#f5c518"/>
             <circle cx="7" cy="21" r="3" fill="#f5c518"/>
@@ -29,7 +27,9 @@ function Navbar() {
             <Link
               key={to}
               to={to}
-              className={pathname === to ? 'nav-bar__link nav-bar__link--active' : 'nav-bar__link'}
+              className={pathname === to
+                ? 'nav-bar__link nav-bar__link--active'
+                : 'nav-bar__link'}
             >
               {label}
             </Link>

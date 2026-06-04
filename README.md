@@ -1,49 +1,117 @@
 # SkateSetup Studio
 
-Microservice-Webapplikation zum Planen und Dokumentieren von Skateboard-Setups.
+Persönliches Logbuch für Skateboard-Setups. Setups planen, per Mail senden und gefahrene Setups dokumentieren.
 
-## Übersicht
+---
 
-Dieses Projekt besteht aus mehreren Services:
+## Voraussetzungen
 
-- `frontend`: React-Anwendung mit Vite und einem kleinen Node.js-Proxy für API-Aufrufe.
-- `storage-service`: Express-REST-API, die Setups in PostgreSQL speichert.
-- `mail-service`: Express-REST-API, die E-Mails über Ethereal verschickt.
-- `db-service`: PostgreSQL-Datenbank.
-- `db-admin`: Adminer für die Datenbank-Verwaltung.
+Bevor du startest, stelle sicher dass folgendes installiert ist:
 
-## Services
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (muss geöffnet und grün sein)
+- [Node.js 20+](https://nodejs.org/) (nur für lokales Entwickeln ohne Docker nötig)
 
-| Service         | Beschreibung                             | Port |
-|-----------------|------------------------------------------|------|
-| Frontend        | React + Vite App, Node.js Proxy-Server   | 3000 (Docker) |
+---
+
+## Applikation starten (Docker)
+
+**Schritt 1:** Docker Desktop öffnen und warten bis unten links „Engine running" steht
+
+**Schritt 2:** Terminal öffnen und in den Projektordner navigieren:
+
+```bash
+cd skatesetup-studio
+```
+
+**Schritt 3:** Applikation bauen und starten:
+
+```bash
+docker-compose up --build
+```
+
+**Schritt 4:** Warten bis alle Services gestartet sind. Du solltest folgendes sehen:
+✔ Storage Service läuft auf Port 3001
+✔ Mail Service läuft auf Port 3002
+✔ Frontend server running on port 3000
+✔ database system is ready to accept connections
+
+text
+
+**Schritt 5:** App im Browser öffnen:
+
+| URL | Beschreibung |
+|-----|-------------|
+| http://localhost:3000 | Applikation |
+| http://localhost:8080 | Adminer (Datenbank-Verwaltung) |
+
+---
+
+## Applikation stoppen
+
+```bash
+docker-compose down
+```
+
+Mit Volume löschen (Datenbank zurücksetzen):
+
+```bash
+docker-compose down -v
+```
+
+---
+
+## Services Übersicht
+
+| Service | Beschreibung | Port |
+|---------|-------------|------|
+| Frontend | React + Vite App, Node.js Proxy-Server | 3000 |
 | Storage Service | REST-API, speichert Setups in PostgreSQL | 3001 |
-| Mail Service    | REST-API, sendet Mails via Ethereal      | 3002 |
-| DB Service      | PostgreSQL Datenbank                     | 5432 |
-| DB Admin        | Adminer Web-UI                           | 8080 |
+| Mail Service | REST-API, sendet Mails via Ethereal | 3002 |
+| DB Service | PostgreSQL Datenbank | 5432 |
+| DB Admin | Adminer Web-UI zur Datenbank-Verwaltung | 8080 |
 
-## Mit Docker starten
+---
 
-Voraussetzung: Docker und Docker Compose sind installiert.
+## Adminer Login (Datenbank)
 
-```bash
-docker compose up --build
-```
+URL: http://localhost:8080
 
-Anschließend:
+| Feld | Wert |
+|------|------|
+| System | PostgreSQL |
+| Server | db-service |
+| Benutzer | postgres |
+| Passwort | postgres |
+| Datenbank | skatesetup |
 
-- Frontend: http://localhost:3000
-- Adminer: http://localhost:8080
+---
 
-### Stoppen
+## Funktionen
 
-```bash
-docker compose down
-```
+### Setup planen
+1. Navigiere zu **„Setup planen"**
+2. Fülle alle Felder aus (Name, Deck, Trucks, Wheels, Bearings, Einsatzzweck)
+3. Gib eine E-Mail-Adresse ein
+4. Klick auf **„Per Mail senden"**
+5. Im grünen Banner erscheint eine Vorschau-URL → im Browser öffnen um die Mail zu sehen
 
-## Frontend lokal starten (ohne Docker)
+> ℹ️ Die App verwendet Ethereal — ein Fake-Mailservice zum Testen. Es wird keine echte Mail gesendet. Die Mail ist nur über den Vorschau-Link sichtbar.
 
-Voraussetzung: Node.js 20+
+### Setup dokumentieren
+1. Navigiere zu **„Meine Setups"**
+2. Fülle das Formular aus inkl. Bewertung und Feedback
+3. Klick auf **„Setup speichern"**
+4. Das Setup erscheint rechts in der Liste
+
+### Setup löschen
+1. In der Liste auf das **✕** oben rechts auf der Karte klicken
+2. Bestätigen → Setup wird aus der Datenbank gelöscht
+
+---
+
+## Lokale Entwicklung (ohne Docker)
+
+### Frontend
 
 ```bash
 cd frontend
@@ -51,11 +119,7 @@ npm install
 npm run dev
 ```
 
-Die lokale Entwicklungsumgebung startet standardmäßig auf:
-
-- http://localhost:5173
-
-## Backend lokal starten (ohne Docker)
+→ http://localhost:5173
 
 ### Storage Service
 
@@ -65,6 +129,8 @@ npm install
 npm start
 ```
 
+→ http://localhost:3001
+
 ### Mail Service
 
 ```bash
@@ -73,25 +139,17 @@ npm install
 npm start
 ```
 
-## Lokale API-URLs
+→ http://localhost:3002
 
-Beim lokalen Entwickeln leitet Vite folgende Pfade weiter:
+> ⚠️ Für die lokale Entwicklung ohne Docker wird eine laufende PostgreSQL-Instanz benötigt.
 
-- `/api/storage` → `http://localhost:3001`
-- `/api/mail` → `http://localhost:3002`
+---
 
-Das bedeutet, das Frontend kann die Backend-Services über die eigenen Pfade ansprechen.
+## Häufige Probleme
 
-## Datenbank
-
-Die PostgreSQL-Datenbank wird von Docker mit folgenden Zugangsdaten konfiguriert:
-
-- Benutzer: `postgres`
-- Passwort: `postgres`
-- Datenbank: `skatesetup`
-
-## Hinweise
-
-- Das Mail-Service verwendet Ethereal für Test-E-Mails. Es zeigt eine Vorschau-URL an, die im Terminal geloggt wird.
-- Statische Frontend-Builds werden in `frontend/dist/` erzeugt.
-- Lokale Umgebungsdateien wie `.env` sollten nicht in Git eingecheckt werden.
+| Problem | Lösung |
+|---------|--------|
+| `docker daemon not running` | Docker Desktop öffnen und warten bis Engine grün ist |
+| `column does not exist` Fehler | Datenbank zurücksetzen mit `docker-compose down -v` dann `docker-compose up` |
+| Falscher Ordner | Sicherstellen dass du im `skatesetup-studio/` Ordner bist, nicht in einem Unterordner |
+| Änderungen werden nicht übernommen | `docker-compose up --build` statt `docker-compose up` |
