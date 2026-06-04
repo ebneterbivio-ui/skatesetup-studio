@@ -1,11 +1,12 @@
-import axios from 'axios' // HTTP-Client für API-Aufrufe
+import axios from 'axios'
 
-const BASE = '/api/storage' // Basis-URL für den Storage-Service
+const BASE = '/api/storage'
 
-// Alle gespeicherten Setups vom Backend laden
 export const getSetups = () =>
   axios.get(`${BASE}/setups`).then(res => res.data)
 
-// Neues Setup an das Backend senden und speichern
 export const saveSetup = (setup) =>
   axios.post(`${BASE}/setups`, setup).then(res => res.data)
+
+export const deleteSetup = (id) =>
+  axios.delete(`${BASE}/setups/${id}`).then(res => res.data)

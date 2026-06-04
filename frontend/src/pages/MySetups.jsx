@@ -7,35 +7,39 @@ import { EMPTY_SETUP_FORM, PURPOSE_OPTIONS, RATING_OPTIONS } from '../utils/skat
 import './MySetups.css'
 
 export default function MySetups() {
-  const [setups, setSetups] = useState([]) // Liste der geladenen Setups
-  const [form, setForm] = useState(EMPTY_SETUP_FORM) // Formularzustand
-  const [status, setStatus] = useState(null) // Statusmeldung anzeigen
-  const [loading, setLoading] = useState(false) // Ladezustand für Submit-Button
+  const [setups, setSetups] = useState([])
+  const [form, setForm] = useState(EMPTY_SETUP_FORM)
+  const [status, setStatus] = useState(null)
+  const [loading, setLoading] = useState(false)
 
-  useEffect(() => { loadSetups() }, []) // Beim Laden der Seite Setups abrufen
+  useEffect(() => { loadSetups() }, [])
 
   const loadSetups = async () => {
     try {
-      const data = await getSetups() // Setups vom Backend laden
+      const data = await getSetups()
       setSetups(data)
     } catch {
       setStatus({ type: 'error', text: 'Setups konnten nicht geladen werden.' })
     }
   }
 
+  const handleDelete = (id) => {
+    setSetups(prev => prev.filter(s => s.id !== id))
+  }
+
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value }) // Formulareingabe speichern
+    setForm({ ...form, [e.target.name]: e.target.value })
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault() // Standardverhalten des Formulars verhindern
+    e.preventDefault()
     setLoading(true)
     setStatus(null)
     try {
-      await saveSetup(form) // Setup an das Backend senden
+      await saveSetup(form)
       setStatus({ type: 'success', text: 'Setup erfolgreich gespeichert!' })
-      setForm(EMPTY_SETUP_FORM) // Formular zurücksetzen
-      await loadSetups() // Liste neu laden
+      setForm(EMPTY_SETUP_FORM)
+      await loadSetups()
     } catch {
       setStatus({ type: 'error', text: 'Fehler beim Speichern. Bitte erneut versuchen.' })
     } finally {
@@ -83,7 +87,13 @@ export default function MySetups() {
               </select>
             </FormField>
             <FormField label="Feedback">
-              <textarea name="feedback" required value={form.feedback} onChange={handleChange} placeholder="Wie hat das Setup performt?" />
+              <textarea
+                name="feedback"
+                required
+                value={form.feedback}
+                onChange={handleChange}
+                placeholder="Wie hat das Setup performt?"
+              />
             </FormField>
             <button className="btn btn-primary" type="submit" disabled={loading}>
               {loading ? 'Wird gespeichert…' : 'Setup speichern'}
@@ -91,11 +101,16 @@ export default function MySetups() {
           </form>
           <StatusMessage type={status?.type} text={status?.text} />
         </section>
+
         <section className="my-setups-page__list-section">
-          <h3 className="my-setups-page__section-title">Gespeicherte Setups ({setups.length})</h3>
+          <h3 className="my-setups-page__section-title">
+            Gespeicherte Setups ({setups.length})
+          </h3>
           {setups.length === 0
             ? <p className="my-setups-page__empty">Noch keine Setups gespeichert.</p>
-            : setups.map(s => <SetupCard key={s.id} setup={s} />)
+            : setups.map(s => (
+                <SetupCard key={s.id} setup={s} onDelete={handleDelete} />
+              ))
           }
         </section>
       </div>

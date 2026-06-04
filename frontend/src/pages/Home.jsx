@@ -1,11 +1,19 @@
-import { Link } from 'react-router-dom' // Link-Komponente für die Navigation importieren
-import './Home.css' // Styles für die Home-Seite importieren
+import { Link } from 'react-router-dom'
+import './Home.css'
 
-// Beschreibende Karten für die Startseite
 const FEATURE_CARDS = [
-  { title: 'Setup planen', description: 'Stelle dein ideales Board zusammen und schick dir die Konfiguration per Mail.' },
-  { title: 'Setups dokumentieren', description: 'Nach dem Fahren: Einsatzzweck, Bewertung und Feedback speichern.' },
-  { title: 'Setup-Logbuch', description: 'Alle gefahrenen Setups auf einen Blick — mit Bewertungen und Feedback.' }
+  {
+    title: 'Setup planen',
+    description: 'Stelle dein ideales Board zusammen und schick dir die Konfiguration per Mail — z.B. als Einkaufsliste.'
+  },
+  {
+    title: 'Setups dokumentieren',
+    description: 'Nach dem Fahren: Einsatzzweck, Bewertung und Feedback speichern. So weisst du, was wirklich funktioniert.'
+  },
+  {
+    title: 'Setup-Logbuch',
+    description: 'Alle gefahrenen Setups auf einen Blick — mit Bewertungen und persönlichem Feedback zur Performance.'
+  }
 ]
 
 export default function Home() {
