@@ -1,8 +1,7 @@
-import './StatusMessage.css' // Styles für Statusnachrichten importieren
+import './StatusMessage.css'
 
-// Zeigt eine Erfolg- oder Fehlermeldung an
 function StatusMessage({ type, text }) {
-  if (!text) return null // Wenn kein Text vorhanden ist, nichts rendern
+  if (!text) return null
   return (
     <p className={`status-message status-message--${type}`}>{text}</p>
   )

@@ -1,6 +1,5 @@
-import './FormField.css' // Styles für Formularfelder importieren
+import './FormField.css'
 
-// Wrapper-Komponente für ein Formularfeld mit Beschriftung
 function FormField({ label, children }) {
   return (
     <div className="form-field">
