@@ -1,8 +1,9 @@
-version: '3.8'
-
 services:
-  frontend:
-    build: ./frontend
+  frontend-service:
+    build:
+      context: ./frontend-service
+      dockerfile: Dockerfile
+    container_name: skatesetup-frontend
     ports:
       - '3000:3000'
     environment:
@@ -14,7 +15,10 @@ services:
       - mail-service
 
   storage-service:
-    build: ./storage-service
+    build:
+      context: ./storage-service
+      dockerfile: Dockerfile
+    container_name: skatesetup-storage
     ports:
       - '3001:3001'
     environment:
@@ -28,7 +32,10 @@ services:
       - db-service
 
   mail-service:
-    build: ./mail-service
+    build:
+      context: ./mail-service
+      dockerfile: Dockerfile
+    container_name: skatesetup-mail
     ports:
       - '3002:3002'
     environment:
@@ -36,6 +43,7 @@ services:
 
   db-service:
     image: postgres:15-alpine
+    container_name: skatesetup-db
     ports:
       - '5432:5432'
     environment:
@@ -47,6 +55,7 @@ services:
 
   db-admin:
     image: adminer
+    container_name: skatesetup-adminer
     ports:
       - '8080:8080'
     environment:
